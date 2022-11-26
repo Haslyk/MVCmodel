@@ -1,0 +1,116 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  meta(name='viewport' content='width=device-width, initial-scale=1.0')
+  title Document
+  link(href='https://fonts.googleapis.com/css2?family=Quicksand&display=swap' rel='stylesheet')
+  link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css' integrity='sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==' crossorigin='anonymous' referrerpolicy='no-referrer')
+  link(rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css')
+  script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous")
+  link(rel='stylesheet' href='/css/style.css')
+nav.navbar.navbar-expand-custom.navbar-mainbg
+  a.navbar-brand.navbar-logo(href='#') LOGO
+  #navbarSupportedContent.collapse.navbar-collapse
+    ul.navbar-nav.ml-auto
+      li.nav-item.active
+        a.nav-link(href='/')
+          i.far.fa-clone
+          | Etkinlikler
+      li.nav-item
+        a.nav-link(href='#')
+          i.fa-solid.fa-trophy
+          | En Çok Oy Alanlar
+      li.nav-item
+        a.nav-link(href='/ideas')
+          i.fa-solid.fa-share
+          | Fikrini Paylaş
+      li.nav-item
+        a.nav-link(href='#')
+          i.fa-solid.fa-user
+          | Profilim
+.content
+  h1 Fikirler
+  hr
+  .ideas.d-flex
+    each user in datas
+      .card
+        .category
+          span
+            | Kategori : #{user.category}
+          span.d-flex
+            form(action="/likeCount", method="post")
+              input(type="hidden", name="id" value=`${user.id}`)
+              button.btn.btn-link.p-0.m-0(type="submit")
+                if(user.liked == false)
+                  i.fa-regular.fa-heart
+                else
+                  i.fa-solid.fa-heart
+            b(style='font-size: 1.2em;color:#0008C1') #{user.likeCount}
+        .title(style=`background-image: url(/img/${user.photo});`)
+          div
+            b #{user.activityTitle}
+        .person
+          .personalImg
+            i.fa-solid.fa-user
+          .name
+            span
+              | #{user.owner[0] + " " + user.owner[1]}
+            span
+              | #{user.owner[2]} / #{user.owner[3]}
+        hr
+        .function
+          button.form-control.btn.btn-warning(type='button' data-bs-toggle='modal' data-bs-target=`#updateModal${user.id}`) Düzenle
+          .modal.fade(tabindex='-1' id=`updateModal${user.id}` aria-labelledby='addModalLabel' aria-hidden='true')
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  h5#addModalLabel.modal-title Etkinliği Düzenle
+                .modal-body.text-left 
+                  .form
+                    form(action=`/update` method='POST')
+                      .mb-2.w-100
+                        label.form-label(for='activity') 
+                          h3 Etkinlik Başlığı :
+                        .inputTags
+                            input.form-control.input(type='text' required autocomplete='off' placeholder='Etkinlik Başlığı...' id='activity' name='title' value=`${user.activityTitle}`)
+                            input(type="hidden", name="id" value=`${user.id}`)
+                      
+                      .mb-2.w-100
+                        label.form-label(for='categoryy') 
+                          h3 Kategori:
+                        .inputTags
+                          select.list-group.w-100.p-2(name='category' id='categoryy' required)
+                            option.list-group-item(value='spor') Spor 
+                            option.list-group-item(value='sanat') Sanat 
+                            option.list-group-item(value='turnuva') Turnuva 
+                            option.list-group-item(value='kulturel') Kültürel 
+                            option.list-group-item(value='muzik') Müzik 
+
+                      .button
+                        input.form-control.input.btn.btn-success.w-100(type='submit' value='Kaydet')
+                                    
+                .modal-footer
+                  button.btn.btn-secondary(type='button' data-bs-dismiss='modal') İptal
+          
+
+          
+          button.form-control.btn.btn-danger.ml-2(type='button' data-bs-toggle='modal' data-bs-target=`#deleteModal${user.id}`) Sil
+          .modal.fade(tabindex='-1' id=`deleteModal${user.id}` aria-labelledby='addModalLabel' aria-hidden='true')
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  h5#addModalLabel.modal-title Silmek İstediğinize Emin misiz?
+                .modal-body.text-left 
+                  .form
+                    form(action=`/delete` method='POST')
+                      input(type="hidden", name="id" value=`${user.id}`)
+                      .button.d-flex
+                        input.form-control.input.btn.btn-success(type='submit' value='Sil')
+                        input.form-control.input.btn.btn-danger.ml-2(type='button' data-bs-dismiss='modal' value='İptal') 
+
+     
+  
+script(src='https://code.jquery.com/jquery-3.4.1.slim.min.js' integrity='sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n' crossorigin='anonymous')
+script(src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js' integrity='sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo' crossorigin='anonymous')
+script(src='https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js' integrity='sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6' crossorigin='anonymous')
